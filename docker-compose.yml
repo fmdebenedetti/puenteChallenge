@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    container_name: windsurf-db
+    environment:
+      POSTGRES_DB: windsurf
+      POSTGRES_USER: windsurfuser
+      POSTGRES_PASSWORD: windsurfpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: windsurf-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/windsurf
+      SPRING_DATASOURCE_USERNAME: windsurfuser
+      SPRING_DATASOURCE_PASSWORD: windsurfpass
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: windsurf-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
+    command: ["npm", "run", "dev", "--", "--host"]
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  db_data:
