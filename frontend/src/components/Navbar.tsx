@@ -1,11 +1,17 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface NavbarProps {
   currentView: 'login' | 'register';
   onViewChange: (view: 'login' | 'register') => void;
+  isAuthenticated: boolean;
+  onLogout: () => void;
 }
 
-export default function Navbar({ currentView, onViewChange }: NavbarProps) {
+const activeClass = 'px-4 py-2 text-sm font-medium rounded-md transition-colors bg-primary-100 text-primary-700';
+const inactiveClass = 'px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-500 hover:text-primary-600 hover:bg-gray-50';
+
+export default function Navbar({ currentView, onViewChange, isAuthenticated, onLogout }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -27,33 +33,39 @@ export default function Navbar({ currentView, onViewChange }: NavbarProps) {
 
           {/* Desktop menu */}
           <div className="hidden sm:flex sm:space-x-4 sm:items-center">
-            <button
-              onClick={() => onViewChange('login')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
-                ${currentView === 'login'
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'text-gray-500 hover:text-primary-600 hover:bg-gray-50'
-                }`}
-            >
-              Iniciar Sesión
-            </button>
-            <button
-              onClick={() => onViewChange('register')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
-                ${currentView === 'register'
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'text-gray-500 hover:text-primary-600 hover:bg-gray-50'
-                }`}
-            >
-              Registrarse
-            </button>
+            {isAuthenticated ? (
+              <>
+                <Link to="/instruments" className={inactiveClass}>Instrumentos</Link>
+                <button
+                  className={`focus:outline-none border-none ${inactiveClass}`}
+                  onClick={onLogout}
+                >
+                  Cerrar Sesión
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className={`focus:outline-none border-none ${currentView === 'login' ? activeClass : inactiveClass}`}
+                  onClick={() => onViewChange('login')}
+                >
+                  Iniciar Sesión
+                </button>
+                <button
+                  className={`focus:outline-none border-none ${currentView === 'register' ? activeClass : inactiveClass}`}
+                  onClick={() => onViewChange('register')}
+                >
+                  Registrarse
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
           <div className="flex items-center sm:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              className="focus:outline-none border-none inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:ring-2 focus:ring-inset focus:ring-primary-500"
             >
               <span className="sr-only">Abrir menú principal</span>
               {/* Icono de menú */}
@@ -93,33 +105,33 @@ export default function Navbar({ currentView, onViewChange }: NavbarProps) {
 
       {/* Mobile menu */}
       <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} sm:hidden`}>
-        <div className="pt-2 pb-3 space-y-1">
-          <button
-            onClick={() => {
-              onViewChange('login');
-              setIsMobileMenuOpen(false);
-            }}
-            className={`w-full text-left px-4 py-2 text-base font-medium transition-colors
-              ${currentView === 'login'
-                ? 'bg-primary-100 text-primary-700'
-                : 'text-gray-500 hover:text-primary-600 hover:bg-gray-50'
-              }`}
-          >
-            Iniciar Sesión
-          </button>
-          <button
-            onClick={() => {
-              onViewChange('register');
-              setIsMobileMenuOpen(false);
-            }}
-            className={`w-full text-left px-4 py-2 text-base font-medium transition-colors
-              ${currentView === 'register'
-                ? 'bg-primary-100 text-primary-700'
-                : 'text-gray-500 hover:text-primary-600 hover:bg-gray-50'
-              }`}
-          >
-            Registrarse
-          </button>
+        <div className="flex justify-center space-x-4">
+          {isAuthenticated ? (
+            <>
+              <Link to="/instruments" className={inactiveClass}>Instrumentos</Link>
+              <button
+                className={`focus:outline-none border-none ${inactiveClass}`}
+                onClick={onLogout}
+              >
+                Cerrar Sesión
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className={`focus:outline-none border-none ${currentView === 'login' ? activeClass : inactiveClass}`}
+                onClick={() => onViewChange('login')}
+              >
+                Iniciar Sesión
+              </button>
+              <button
+                className={`focus:outline-none border-none ${currentView === 'register' ? activeClass : inactiveClass}`}
+                onClick={() => onViewChange('register')}
+              >
+                Registrarse
+              </button>
+            </>
+          )}
         </div>
       </div>
     </nav>
